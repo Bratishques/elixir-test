@@ -7,6 +7,7 @@ defmodule Testtask.Application do
   alias Testtask.Database
   alias Testtask.WebsocketETS
   alias Testtask.ETS
+  alias Testtask.TTL
 
   def start(_type, _args) do
     children = [
@@ -19,8 +20,22 @@ defmodule Testtask.Application do
       # Start a worker by calling: Testtask.Worker.start_link(arg)
       # {Testtask.Worker, arg}
     ]
-    Database.prepare_database()
-    WebsocketETS.prepare_storage()
+    TTL.prepare_ttl_manager()
+    ETS.prepare_ets()
+    ETS.create_table("messages")
+    ETS.create_table("phone_numbers")
+    ETS.create_table("iq")
+    ETS.create_table("iq")
+    ETS.delete_table("iq")
+    ETS.delete_table("iq")
+    ETS.put_value_into_db("messages", "John", "foo")
+    ETS.get_value_from_db("messages", "John")
+    ETS.get_value_from_db("messages", "Tony")
+    ETS.put_value_into_db("messages", "Tony", "bar", "10")
+    ETS.get_value_from_db("messages", "Tony")
+    ETS.put_value_into_db("messages", "Masha", "Hi", "20")
+    ETS.put_value_into_db("messages", "Vitya", "Hello", "20")
+    ETS.delete_table("messages")
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options

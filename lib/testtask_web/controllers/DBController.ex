@@ -1,6 +1,8 @@
 defmodule TesttaskWeb.DBController do
   use TesttaskWeb, :controller
 
+  @doc """
+  Previous iteration of DBController
   alias Testtask.Database
   alias Testtask.TTL
 
@@ -50,6 +52,8 @@ defmodule TesttaskWeb.DBController do
     tables = Database.lookup_dbs()
     json(conn, tables)
   end
+"""
 
+alias Testtask.ETS
 
 end
