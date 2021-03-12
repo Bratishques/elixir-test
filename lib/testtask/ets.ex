@@ -77,7 +77,7 @@ defmodule Testtask.ETS do
         end
       {:no_table, _result} ->
         IO.inspect("No such database")
-        {:error, false}
+        {:error, db_name}
     end
   end
 

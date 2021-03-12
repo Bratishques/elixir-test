@@ -100,11 +100,44 @@ defmodule TesttaskWeb.DBController do
     end
   end
 
-  def put(db_name, batch) do
-
+  def put_helper(db_name, %{"key" => key, "value" => value}) do
+    ETS.put_value_into_db(db_name, key, value)
   end
 
-  def erase(db_name, key) do
+
+  def put(conn, %{"database" => db_name}) do
+    batch = conn.body_params["_json"]
+    data = Enum.map(batch,
+    fn kv ->
+      cond do
+        is_map(kv) ->
+          if Map.has_key?(kv, "key") and Map.has_key?(kv, "value") do
+            if Map.has_key?(kv, "ttl") do
+              ETS.put_value_into_db(db_name, kv["key"], kv["value"], kv["ttl"])
+              %{kv["key"] => true}
+            else
+              ETS.put_value_into_db(db_name, kv["key"], kv["value"])
+              %{kv["key"] => true}
+            end
+          end
+          true -> false
+        end
+    end
+    )
+    json(conn, data)
+  end
+
+  def erase(conn, %{"database" => db_name, "key" => key}) do
+    case ETS.erase_value_from_db(db_name, key) do
+      {:error, db_name} ->
+        conn
+        |> put_status(404)
+        |> json(%{db_name => "not found"})
+      {:ok, {db_name, key}} ->
+        conn
+        |> put_status(200)
+        |> json(%{db_name => "#{key} deleted"})
+    end
 
   end
 end

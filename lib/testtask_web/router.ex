@@ -7,7 +7,9 @@ defmodule TesttaskWeb.Router do
 
   scope "/api", TesttaskWeb do
     get "/db/:database/:key", DBController, :get
-    get "/db/:database", DBController, :get_database
+    delete "/db/:database/:key", DBController, :erase
+
+    post "db/:database/put", DBController, :put
     post "/db/:database", DBController, :create
     delete "/db/:database", DBController, :delete
 
