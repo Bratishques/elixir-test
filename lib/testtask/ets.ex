@@ -1,23 +1,40 @@
 defmodule Testtask.ETS do
 
   alias Testtask.TTL
+  alias Testtask.Wrapper
 
   def prepare_ets() do
     :ets.new(:db_list, [:set, :public, :named_table])
   end
 
+
+
+  def create_table(db_name) do
+    case lookup_table(db_name) do
+      {:exists, _result} ->
+        IO.inspect("Databse #{db_name} already exists")
+        {:error, db_name}
+      {:no_table, _message} ->
+        kernel = :application.info[:running][:kernel]
+        data = :ets.new(:table, [:public, :set])
+        :ets.give_away(data, kernel, {})
+        :ets.insert(:db_list, {db_name, data})
+        {:ok, db_name}
+    end
+  end
+
   def delete_table(db_name) do
     case lookup_table(db_name) do
-      {:exists, result} ->
-        {db_name, ref} = result
-        :ets.delete(:db_list, db_name)
+      {:exists, {db_name, ref}} ->
+        IO.inspect(ref)
         :ets.delete(ref)
+        :ets.delete(:db_list, db_name)
         TTL.erase_ttl_data(db_name)
         IO.inspect("Deleted #{db_name} database")
         {:ok, db_name}
       {:no_table, _result} ->
         IO.inspect("Nothing to delete")
-        {:error, false}
+        {:error, db_name}
     end
   end
 
@@ -59,6 +76,8 @@ defmodule Testtask.ETS do
             {:error, {db_name, key}}
         end
       {:no_table, _result} ->
+        IO.inspect("No such database")
+        {:error, false}
     end
   end
 
@@ -76,22 +95,11 @@ defmodule Testtask.ETS do
           end
       {:no_table, _result} ->
         IO.inspect("No such database")
-        {:no_db, false}
+        {:no_db, db_name}
       end
   end
 
-  def create_table(db_name) do
-    case lookup_table(db_name) do
-      {:exists, _result} ->
-        IO.inspect("Databse #{db_name} already exists")
-        {:error, db_name}
-      {:no_table, _message} ->
-        data = :ets.new(:table, [:set, :public])
-        :ets.insert(:db_list, {db_name, data})
-        IO.inspect(:ets.lookup(:db_list, db_name))
-        {:ok, db_name}
-    end
-  end
+
 
   def lookup_table(db_name) do
     case :ets.lookup(:db_list, db_name) do

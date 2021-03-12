@@ -22,6 +22,13 @@ config :testtask, TesttaskWeb.Endpoint,
   check_origin: false,
   watchers: []
 
+config :plug, :statuses, %{
+    409 => "Already Exists",
+    201 => "Created"
+  }
+
+
+
 # ## SSL Support
 #
 # In order to use HTTPS in development, a self-signed

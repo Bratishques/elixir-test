@@ -54,6 +54,57 @@ defmodule TesttaskWeb.DBController do
   end
 """
 
-alias Testtask.ETS
+  alias Testtask.ETS
 
+  def create(conn, %{"database" => db_name}) do
+    case ETS.create_table(db_name) do
+      {:ok, db_name} ->
+        conn
+        |> put_status(:created)
+        |> json(%{db_name => true})
+      {:error, db_name} ->
+        IO.inspect(db_name)
+        conn
+        |> put_status(:already_exists)
+        |> json(%{db_name => false})
+    end
+  end
+
+  def delete(conn, %{"database" => db_name}) do
+    case ETS.delete_table(db_name) do
+      {:ok, db_name} ->
+        conn
+        |> put_status(200)
+        |> json(%{db_name => true})
+      {:error, db_name} ->
+        conn
+        |> put_status(404)
+        |> json(%{db_name => false})
+    end
+  end
+
+  def get(conn, %{"database" => db_name, "key" => key}) do
+    case ETS.get_value_from_db(db_name, key) do
+      {:ok, {key, value}} ->
+        conn
+        |> put_status(200)
+        |> json(%{key => value})
+      {:no_key, {_db_name, key}} ->
+        conn
+        |> put_status(404)
+        |> json(%{key => "not found"})
+      {:no_db, db_name} ->
+        conn
+        |> put_status(404)
+        |> json(%{db_name => "not found"})
+    end
+  end
+
+  def put(db_name, batch) do
+
+  end
+
+  def erase(db_name, key) do
+
+  end
 end

@@ -19,6 +19,11 @@ config :testtask, TesttaskWeb.Endpoint,
   pubsub_server: Testtask.PubSub,
   live_view: [signing_salt: "vkLpsbP9"]
 
+config :plug, :statuses, %{
+    409 => "Already Exists",
+    201 => "Created"
+  }
+
 # Configures Elixir's Logger
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",
