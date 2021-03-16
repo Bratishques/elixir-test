@@ -1,20 +1,16 @@
 defmodule TesttaskWeb.UserSocket do
   use Phoenix.Socket
   alias Testtask.WebsocketETS
-  channel "rooms:*", Testtask.DBChannel
-  #ws://localhost:4000/socket/websocket?id=1
+
+  channel "db:*", Testtask.DBChannel
+  #ws://localhost:4001/socket/websocket?id=1
   transport :websocket, Phoenix.Transports.WebSocket
 
   def connect(_params, socket, _connect_info) do
-    IO.inspect(socket)
-    {:ok, socket}
+    {:ok, assign(socket, :user_id, "client#{:os.system_time(:second)}")}
   end
 
-  #def handle_in("new_msg", %{"uid" => uid, "body" => body}, socket) do
-    #broadcast!(socket, "new_msg", %{uid: uid, body: body})
-    #{:noreply, socket}
-  #end
 
-  def id(socket), do: nil
+  def id(socket), do: "users_socket:#{socket.assigns.user_id}"
 
 end

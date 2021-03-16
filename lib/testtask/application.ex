@@ -22,6 +22,7 @@ defmodule Testtask.Application do
       # Start a worker by calling: Testtask.Worker.start_link(arg)
       # {Testtask.Worker, arg}
     ]
+    WebsocketETS.prepare_storage()
     TTL.prepare_ttl_manager()
     ETS.prepare_ets()
     ETS.create_table("messages")

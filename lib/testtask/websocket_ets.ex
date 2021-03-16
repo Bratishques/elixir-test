@@ -3,18 +3,17 @@ defmodule Testtask.WebsocketETS do
     :ets.new(:socket_clients, [:bag, :named_table, :public])
   end
 
-  def insert_client(id) do
-    if length(find_client(id)) == 0 do
-      :ets.insert(:socket_clients, {id,[]})
-    end
+  def remove_client(id) do
+    :ets.delete(:socket_client, id)
   end
 
   def find_client(id) do
     :ets.lookup(:socket_clients, id)
   end
 
-  def subscribe_client(dbname, key) do
-
+  def subscribe_client(id, dbname, key) do
+    IO.inspect("inserted client #{id}")
+    :ets.insert(:socket_clients, {{db_name, key}, id})
   end
 
 end
