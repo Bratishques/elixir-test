@@ -11,7 +11,7 @@ defmodule Testtask.WebsocketETS do
     :ets.lookup(:socket_clients, id)
   end
 
-  def subscribe_client(id, dbname, key) do
+  def subscribe_client(id, db_name, key) do
     IO.inspect("inserted client #{id}")
     :ets.insert(:socket_clients, {{db_name, key}, id})
   end
